@@ -9,13 +9,21 @@
   function row(n) {
     const link = n.projectId ? `/board.html?p=${n.projectId}${n.taskId ? '&t=' + n.taskId : ''}` : '#';
     const color = n.project ? n.project.color : 'iris';
+    const pill = n.project ? `<span class="npill c-${U.esc(color)}" style="background:var(--c-${U.esc(color)})">${U.esc(n.project.code)}</span>` : '';
+    if (n.type === 'due_soon') {
+      return `<a class="notif ${n.read ? '' : 'unread'}" href="${link}">
+        <span class="avatar avatar-initials" style="width:40px;height:40px;background:var(--accent-weak);color:var(--accent)">${U.icon('clock', 20)}</span>
+        <div class="ntext"><div><span class="nname">Reminder</span> · ${U.esc(n.detail)}</div><div class="nt">${U.timeAgo(n.createdAt)}</div></div>
+        ${pill}
+      </a>`;
+    }
     return `<a class="notif ${n.read ? '' : 'unread'}" href="${link}">
       ${U.avatarHtml(n.actor, 40)}
       <div class="ntext">
         <div><span class="nname">${U.esc(n.actor ? n.actor.name : 'Someone')}</span> ${U.esc(verb(n.type))} ${n.detail ? '<strong>' + U.esc(n.detail) + '</strong>' : ''}</div>
         <div class="nt">${U.timeAgo(n.createdAt)}</div>
       </div>
-      ${n.project ? `<span class="npill c-${U.esc(color)}" style="background:var(--c-${U.esc(color)})">${U.esc(n.project.code)}</span>` : ''}
+      ${pill}
     </a>`;
   }
 

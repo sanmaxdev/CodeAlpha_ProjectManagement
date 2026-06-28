@@ -78,7 +78,7 @@
     if (!iso) return '';
     const then = new Date(iso.replace(' ', 'T') + (iso.includes('Z') ? '' : 'Z')).getTime();
     const s = Math.floor((Date.now() - then) / 1000);
-    if (s < 45) return 'just now';
+    if (s < 60) return 'just now';
     if (s < 3600) return Math.floor(s / 60) + 'm ago';
     if (s < 86400) return Math.floor(s / 3600) + 'h ago';
     if (s < 604800) return Math.floor(s / 86400) + 'd ago';
@@ -153,7 +153,7 @@
         <a class="brand" href="${window.api.isLoggedIn() ? '/dashboard.html' : '/'}">
           <span class="brand-mark">${icon('logo', 22)}</span> Cadence
         </a>
-        ${window.api.isLoggedIn() ? `<nav class="topnav"><a href="/dashboard.html" class="${active === 'dashboard' ? 'active' : ''}">Projects</a></nav>` : ''}
+        ${window.api.isLoggedIn() ? `<nav class="topnav"><a href="/dashboard.html" class="${active === 'dashboard' ? 'active' : ''}">Projects</a><a href="/mytasks.html" class="${active === 'mytasks' ? 'active' : ''}">My Tasks</a></nav>` : ''}
         <div class="topbar-right">${right}</div>
       </div>`;
 
@@ -201,6 +201,7 @@
     mention: 'mentioned you in',
   };
   function notifText(n) {
+    if (n.type === 'due_soon') return 'Reminder · ' + (n.detail || 'a task is due');
     const who = n.actor ? n.actor.name : 'Someone';
     const verb = VERB[n.type] || 'updated';
     return `${who} ${verb} ${n.detail ? '“' + n.detail + '”' : ''}`.trim();

@@ -12,6 +12,8 @@
   const myId = window.api.getUser().id;
 
   const state = { project: null, columns: [], tasks: [], presence: [] };
+  const filters = { search: '', assignee: '', priority: '', label: '' };
+  let activityCache = [];
   let dragId = null;
   let openTaskId = null;
   let pendingRender = false;
@@ -53,12 +55,64 @@
         </div>
         <div class="board-meta">
           <div class="presence" id="presence"></div>
+          <button class="btn btn-outline btn-sm" id="activity-btn">${U.icon('clock', 16)} Activity</button>
           <button class="btn btn-outline btn-sm" id="members-btn">${U.icon('users', 16)} <span>${p.members.length}</span></button>
         </div>
-      </div>`;
+      </div>
+      ${filterBarHtml()}`;
     renderPresence();
     document.getElementById('members-btn').addEventListener('click', openMembers);
+    document.getElementById('activity-btn').addEventListener('click', openActivity);
+    wireFilters();
   }
+
+  function filterBarHtml() {
+    const members = state.project.members;
+    const labels = distinctLabels();
+    const opt = (val, label, sel) => `<option value="${val}" ${sel ? 'selected' : ''}>${U.esc(label)}</option>`;
+    return `<div class="board-filters">
+      <span class="bf-search">${U.icon('search', 16)}<input id="bf-search" placeholder="Search cards" value="${U.esc(filters.search)}" /></span>
+      <select id="bf-assignee" class="${filters.assignee ? 'on' : ''}">
+        ${opt('', 'Anyone', !filters.assignee)}${opt('me', 'Assigned to me', filters.assignee === 'me')}${opt('none', 'Unassigned', filters.assignee === 'none')}
+        ${members.map((m) => opt(m.id, m.name, String(filters.assignee) === String(m.id))).join('')}
+      </select>
+      <select id="bf-priority" class="${filters.priority ? 'on' : ''}">
+        ${opt('', 'Any priority', !filters.priority)}${['urgent', 'high', 'medium', 'low'].map((k) => opt(k, U.PRIORITY[k].label, filters.priority === k)).join('')}
+      </select>
+      ${labels.length ? `<select id="bf-label" class="${filters.label ? 'on' : ''}">${opt('', 'Any label', !filters.label)}${labels.map((l) => opt(l, l, filters.label === l)).join('')}</select>` : ''}
+      <button class="bf-clear" id="bf-clear" ${filtersActive() ? '' : 'hidden'}>${U.icon('x', 14)} Clear</button>
+    </div>`;
+  }
+
+  function distinctLabels() {
+    const set = new Set();
+    state.tasks.forEach((t) => (t.labels || []).forEach((l) => set.add(l)));
+    return [...set].sort();
+  }
+  function filtersActive() { return !!(filters.search || filters.assignee || filters.priority || filters.label); }
+  function matchesFilter(t) {
+    if (filters.search) {
+      const s = filters.search.toLowerCase();
+      if (!((t.title || '').toLowerCase().includes(s) || (t.labels || []).some((l) => l.toLowerCase().includes(s)))) return false;
+    }
+    if (filters.assignee === 'me') { if (!t.assignee || t.assignee.id !== myId) return false; }
+    else if (filters.assignee === 'none') { if (t.assignee) return false; }
+    else if (filters.assignee) { if (!t.assignee || String(t.assignee.id) !== String(filters.assignee)) return false; }
+    if (filters.priority && t.priority !== filters.priority) return false;
+    if (filters.label && !(t.labels || []).includes(filters.label)) return false;
+    return true;
+  }
+  function wireFilters() {
+    const search = document.getElementById('bf-search');
+    if (search) {
+      let tmr;
+      search.addEventListener('input', () => { clearTimeout(tmr); tmr = setTimeout(() => { filters.search = search.value.trim(); renderBoard(); syncClear(); }, 180); });
+    }
+    const bind = (id, key) => { const el = document.getElementById(id); if (el) el.addEventListener('change', () => { filters[key] = el.value; renderBoard(); renderTop(); }); };
+    bind('bf-assignee', 'assignee'); bind('bf-priority', 'priority'); bind('bf-label', 'label');
+    document.getElementById('bf-clear')?.addEventListener('click', () => { filters.search = ''; filters.assignee = ''; filters.priority = ''; filters.label = ''; renderTop(); renderBoard(); });
+  }
+  function syncClear() { const c = document.getElementById('bf-clear'); if (c) c.hidden = !filtersActive(); }
 
   function renderPresence() {
     const el = document.getElementById('presence');
@@ -78,7 +132,7 @@
   }
 
   function columnHtml(col) {
-    const cards = tasksIn(col.id);
+    const cards = tasksIn(col.id).filter(matchesFilter);
     return `<section class="column" data-col="${col.id}">
       <div class="col-head">
         <span class="cname">${U.esc(col.name)}</span>
@@ -509,8 +563,71 @@
     </div>`;
   }
 
+  /* ---------- activity drawer ---------- */
+  function openActivity() {
+    let d = document.getElementById('activity-drawer');
+    if (!d) {
+      const back = document.createElement('div');
+      back.className = 'drawer-backdrop';
+      back.id = 'activity-backdrop';
+      d = document.createElement('div');
+      d.className = 'drawer';
+      d.id = 'activity-drawer';
+      d.innerHTML = `<div class="drawer-head"><h2>Activity</h2><button class="icon-btn js-close">${U.icon('x', 18)}</button></div><div class="drawer-body" id="activity-body"></div>`;
+      document.body.appendChild(back);
+      document.body.appendChild(d);
+      back.addEventListener('click', closeActivity);
+      d.querySelector('.js-close').addEventListener('click', closeActivity);
+    }
+    d.classList.add('open');
+    document.getElementById('activity-backdrop').classList.add('open');
+    loadActivity();
+  }
+  function closeActivity() {
+    document.getElementById('activity-drawer')?.classList.remove('open');
+    document.getElementById('activity-backdrop')?.classList.remove('open');
+  }
+  async function loadActivity() {
+    const body = document.getElementById('activity-body');
+    body.innerHTML = '<div class="skel" style="height:42px;margin-bottom:8px"></div>'.repeat(6);
+    try {
+      const { activity } = await window.api.get('/projects/' + projectId + '/activity', true);
+      activityCache = activity;
+      body.innerHTML = activity.length ? activity.map(activityHtml).join('') : '<p class="muted" style="padding:14px">No activity yet.</p>';
+    } catch (e) {
+      body.innerHTML = '<p class="muted" style="padding:14px">Could not load activity.</p>';
+    }
+  }
+  function activityVerb(a) {
+    const map = {
+      project_created: 'created this project',
+      member_added: 'added ' + a.detail,
+      task_created: 'created “' + a.detail + '”',
+      assigned: 'assigned “' + a.detail + '”',
+      moved: 'moved ' + a.detail,
+      completed: 'completed “' + a.detail + '”',
+      reopened: 'reopened “' + a.detail + '”',
+      comment: 'commented on “' + a.detail + '”',
+    };
+    return map[a.type] || a.detail;
+  }
+  function activityHtml(a) {
+    return `<div class="activity-item">${U.avatarHtml(a.user, 30)}
+      <div><div>${a.user ? '<strong>' + U.esc(a.user.name) + '</strong> ' : ''}${U.esc(activityVerb(a))}</div><div class="at">${U.timeAgo(a.createdAt)}</div></div>
+    </div>`;
+  }
+
   /* ---------- realtime ---------- */
   RT.on('presence', (d) => { if (d.projectId === projectId) { state.presence = d.users; renderPresence(); } });
+  RT.on('activity', (a) => {
+    activityCache.unshift(a);
+    const body = document.getElementById('activity-body');
+    const drawer = document.getElementById('activity-drawer');
+    if (body && drawer && drawer.classList.contains('open')) {
+      const empty = body.querySelector('.muted'); if (empty) empty.remove();
+      body.insertAdjacentHTML('afterbegin', activityHtml(a));
+    }
+  });
 
   function ext(d) { return d && d.by === myId; }
 

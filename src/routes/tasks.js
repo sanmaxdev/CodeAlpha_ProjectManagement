@@ -32,6 +32,25 @@ function memberGuard(req, res, projectId) {
   return true;
 }
 
+router.get('/mine', (req, res) => {
+  const rows = db
+    .prepare(
+      `SELECT t.*, p.name AS p_name, p.code AS p_code, p.color AS p_color, c.name AS c_name
+       FROM tasks t
+       JOIN projects p ON p.id = t.project_id
+       JOIN columns c ON c.id = t.column_id
+       WHERE t.assignee_id = ?
+       ORDER BY (t.due_date IS NULL), date(t.due_date) ASC, t.id DESC`
+    )
+    .all(req.user.id);
+  const tasks = rows.map((r) => ({
+    ...serializeTask(r),
+    project: { id: r.project_id, name: r.p_name, code: r.p_code, color: r.p_color },
+    columnName: r.c_name,
+  }));
+  res.json({ tasks });
+});
+
 router.post('/', (req, res) => {
   const columnId = Number(req.body.columnId);
   const column = getColumn(columnId);

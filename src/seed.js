@@ -77,7 +77,7 @@ module.exports = function seed() {
   const mob = project('Mobile App Launch', 'MOB', 'Ship the v1 iOS and Android apps for the public beta.', 'iris', 'demo', ['demo', 'ava', 'noah', 'mia', 'liam']);
   task(mob.id, mob.cols.todo, 'Design empty states for the feed', { assignee: 'ava', priority: 'medium', labels: ['design'], due: dayOffset(5) });
   task(mob.id, mob.cols.todo, 'Set up push notifications', { assignee: 'mia', priority: 'high', labels: ['backend', 'infra'], due: dayOffset(7), desc: 'APNs + FCM, behind a feature flag.' });
-  task(mob.id, mob.cols.todo, 'Research analytics SDKs', { assignee: 'demo', priority: 'low', labels: ['research'] });
+  task(mob.id, mob.cols.todo, 'Research analytics SDKs', { assignee: 'demo', priority: 'low', labels: ['research'], due: dayOffset(1) });
   const feedTask = task(mob.id, mob.cols.prog, 'Build feed infinite scroll', { assignee: 'noah', priority: 'high', labels: ['frontend'], due: dayOffset(3), desc: 'Cursor-based pagination, prefetch next page at 80% scroll.' });
   task(mob.id, mob.cols.prog, 'Implement auth with refresh tokens', { assignee: 'mia', priority: 'high', labels: ['backend'], due: dayOffset(2) });
   task(mob.id, mob.cols.review, 'Profile screen layout', { assignee: 'ava', priority: 'medium', labels: ['design', 'frontend'], due: dayOffset(-1) });
@@ -106,7 +106,7 @@ module.exports = function seed() {
   const mkt = project('Q3 Marketing', 'MKT', 'Campaign planning and content for the third quarter.', 'amber', 'emma', ['emma', 'demo']);
   task(mkt.id, mkt.cols.todo, 'Plan the launch webinar', { assignee: 'emma', by: 'emma', priority: 'medium' });
   task(mkt.id, mkt.cols.todo, 'Draft the email sequence', { assignee: 'emma', by: 'emma', priority: 'high', labels: ['copy'], due: dayOffset(6) });
-  task(mkt.id, mkt.cols.prog, 'Partner outreach list', { assignee: 'demo', by: 'emma', priority: 'low', labels: ['research'] });
+  task(mkt.id, mkt.cols.prog, 'Partner outreach list', { assignee: 'demo', by: 'emma', priority: 'low', labels: ['research'], due: dayOffset(-1) });
   task(mkt.id, mkt.cols.done, 'Q2 retro write-up', { assignee: 'emma', by: 'emma', done: true });
 
   const activity = [

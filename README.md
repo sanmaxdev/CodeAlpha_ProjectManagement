@@ -12,7 +12,10 @@ Built for the **CodeAlpha Full Stack Development Internship — Task 3 (Project 
 - **In-task comments** with `@mentions` and a per-task discussion thread
 - **Assignments & notifications** — get notified the moment you're assigned, mentioned, or added to a project
 - **Live collaboration over WebSockets** — every card move, edit, comment, and membership change appears for teammates instantly, with live presence ("who's viewing")
-- **Activity feed** per project
+- **My Tasks** — a personal view of everything assigned to you across every project, grouped by overdue / due today / upcoming
+- **Board filters & search** — filter cards by assignee, priority, or label, search by text, or show only your own tasks
+- **Live activity feed** — a per-project drawer that streams every action as it happens
+- **Due-date reminders** — the server checks for tasks due soon or overdue and notifies the assignee automatically
 - Authentication with JWT, light/dark theme, responsive layout, and full loading / empty / error states
 
 ## Tech stack
@@ -94,6 +97,7 @@ Notifications are pushed directly to the recipient's sockets (`notification`, `u
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | POST | `/api/tasks` | Create a task |
+| GET | `/api/tasks/mine` | Tasks assigned to you across all projects |
 | GET | `/api/tasks/:id` | Task + comments |
 | PUT | `/api/tasks/:id` | Update fields / assignee / completion |
 | PUT | `/api/tasks/:id/move` | Move to a column at an index |

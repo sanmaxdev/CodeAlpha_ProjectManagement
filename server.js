@@ -8,6 +8,7 @@ const express = require('express');
 
 const seed = require('./src/seed');
 const realtime = require('./src/realtime');
+const reminders = require('./src/reminders');
 const authRoutes = require('./src/routes/auth');
 const userRoutes = require('./src/routes/users');
 const projectRoutes = require('./src/routes/projects');
@@ -42,6 +43,7 @@ app.use((err, req, res, next) => {
 
 const server = http.createServer(app);
 realtime.init(server);
+reminders.start();
 
 server.listen(PORT, () => {
   console.log(`\n  Cadence running at http://localhost:${PORT}\n`);
