@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create account · Cadence</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('cadence_theme')||'light';document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body>
+  <header data-header></header>
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <h1>Create your account</h1>
+      <p class="sub">Start organizing work with your team in minutes.</p>
+      <div id="form-error" class="form-error" hidden></div>
+      <form id="register-form" novalidate>
+        <label class="field"><span>Full name</span>
+          <input id="name" name="name" autocomplete="name" placeholder="Jordan Lee" required />
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label class="field"><span>Username</span>
+            <input id="username" name="username" autocomplete="username" placeholder="jordan" required />
+          </label>
+          <label class="field"><span>Role / title</span>
+            <input id="title" name="title" placeholder="Designer" />
+          </label>
+        </div>
+        <label class="field"><span>Email</span>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@team.com" required />
+        </label>
+        <label class="field"><span>Password</span>
+          <input id="password" name="password" type="password" autocomplete="new-password" placeholder="At least 6 characters" required />
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+      </form>
+      <p class="auth-alt">Already have an account? <a href="/login.html">Log in</a></p>
+    </div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

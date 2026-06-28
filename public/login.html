@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in · Cadence</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('cadence_theme')||'light';document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body>
+  <header data-header></header>
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="sub">Log in to pick up where your team left off.</p>
+      <div id="form-error" class="form-error" hidden></div>
+      <form id="login-form" novalidate>
+        <label class="field"><span>Email or username</span>
+          <input id="identifier" name="identifier" autocomplete="username" placeholder="demo@cadence.app" required />
+        </label>
+        <label class="field"><span>Password</span>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        </label>
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+      </form>
+      <p class="auth-alt">New to Cadence? <a href="/register.html">Create an account</a></p>
+      <p class="auth-alt" style="margin-top:8px;font-size:13px">Demo: <strong>demo@cadence.app</strong> · <strong>cadence1234</strong></p>
+    </div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

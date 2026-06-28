@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings · Cadence</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('cadence_theme')||'light';document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body>
+  <header data-header></header>
+  <main class="page" style="max-width:620px">
+    <div class="page-head"><div><h1>Settings</h1><p class="sub">Manage how you appear to your team.</p></div></div>
+    <div class="auth-card" style="box-shadow:var(--shadow-sm)">
+      <div id="form-error" class="form-error" hidden></div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">
+        <span id="avatar-preview"></span>
+        <div><div id="who-name" style="font-weight:600;font-size:16px"></div><div class="muted" id="who-handle" style="font-size:13.5px"></div></div>
+      </div>
+      <form id="settings-form" novalidate>
+        <label class="field"><span>Full name</span><input id="s-name" /></label>
+        <label class="field"><span>Role / title</span><input id="s-title" placeholder="Product Manager" /></label>
+        <label class="field"><span>Avatar URL</span><input id="s-avatar" placeholder="https://…" /></label>
+        <div class="field"><span>Quick picks</span><div class="swatches" id="avatar-picks"></div></div>
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </form>
+    </div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "cadence-pm",
+  "version": "1.0.0",
+  "description": "Cadence - a collaborative project management tool (CodeAlpha Full Stack Internship - Task 3)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js"
+  },
+  "keywords": [
+    "project-management",
+    "kanban",
+    "express",
+    "sqlite",
+    "websocket",
+    "jwt",
+    "codealpha"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "ws": "^8.18.0"
+  }
+}
